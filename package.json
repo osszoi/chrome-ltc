@@ -1,15 +1,14 @@
 {
   "name": "chrome-link-traffic-control",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "scripts": {},
   "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "author": "Eduardo Lorenzo <ejlorenzo19@gmail.com>",
+  "license": "MIT",
+  "description": "Git auto commiter that uses OpenAI for generating commit message and description",
   "dependencies": {
+    "cli-table3": "^0.6.5",
     "sudo-prompt": "^9.2.1"
   }
 }

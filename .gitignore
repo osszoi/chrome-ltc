@@ -1,0 +1,4 @@
+add.reg
+custom-browser.bat
+node_modules/
+package-lock.json

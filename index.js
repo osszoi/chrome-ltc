@@ -2,15 +2,23 @@
 
 const { exec } = require('child_process');
 const os = require('os');
+const fs = require('fs');
+const path = require('path');
 
-// Define regex-profile mappings
-const profileMapping = [
-	{ regex: /.*dataseat.*/, profile: 'Profile 2' },
-	{ regex: /.*awto.*/, profile: 'Profile 1' },
-	{ regex: /.*sbreit.*/, profile: 'Profile 1' },
-	{ regex: /.*gowgo.*/, profile: 'Profile 1' },
-	{ regex: /.+/, profile: 'Default' }
-];
+const profileMappingPath = path.join(__dirname, 'config.json');
+let profileMapping = [];
+
+if (fs.existsSync(profileMappingPath)) {
+	profileMapping = JSON.parse(fs.readFileSync(profileMappingPath, 'utf-8')).map(
+		({ regex, profile }) => ({
+			regex: new RegExp(regex),
+			profile
+		})
+	);
+} else {
+	console.error('Profile mapping file not found. Using default profile.');
+	profileMapping = [{ regex: /.+/, profile: 'Default' }];
+}
 
 // Get the Chrome command based on OS
 function getChromeCommand(url) {

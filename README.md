@@ -26,9 +26,27 @@ Chrome Link Traffic Control is a tool that allows you to control which Chrome pr
 TBD
 
 ### Linux
-TBD
+1. Install the dependencies:
+    ```sh
+    npm install
+    ```
+
+2. Run the setup script:
+    ```sh
+    node setup.js
+    ```
+
+3. The script will automatically:
+    - Create a desktop entry file at `~/.local/share/applications/custom-browser.desktop`
+    - Set it as your default browser for HTTP and HTTPS protocols
+
+4. Verify the setup:
+    ```sh
+    xdg-settings get default-web-browser
+    ```
+    This should output: `custom-browser.desktop`
 
 ## Checklist
 - [x] Setup tested and working on Windows
 - [ ] Setup tested and working on Mac
-- [ ] Setup tested and working on Linux
+- [x] Setup tested and working on Linux

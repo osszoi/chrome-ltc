@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Name=Custom Browser
+Comment=Chrome Link Traffic Control Browser
+Exec=/home/eduardo/Work/personal/chrome-ltc/custom-browser-wrapper.sh %u
+Icon=web-browser
+Type=Application
+StartupNotify=true
+Terminal=false
+Categories=Network;WebBrowser;
+MimeType=x-scheme-handler/unknown;x-scheme-handler/about;text/html;text/xml;application/xhtml+xml;application/xml;application/rss+xml;application/rdf+xml;image/gif;image/jpeg;image/png;x-scheme-handler/http;x-scheme-handler/https;x-scheme-handler/ftp;x-scheme-handler/chrome;video/webm;application/x-xpinstall;
+

@@ -1,5 +1,6 @@
 add.reg
 custom-browser.bat
+custom-browser-wrapper.sh
 node_modules/
 package-lock.json
 config.json

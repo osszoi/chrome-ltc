@@ -3,8 +3,42 @@ const fs = require('fs');
 const path = require('path');
 const { exec } = require('child_process');
 const sudo = require('sudo-prompt'); // Added for Windows elevation
+const readline = require('readline');
 
 const platform = os.platform();
+
+// Function to prompt user for config.json
+async function checkConfig() {
+	const configPath = path.join(__dirname, 'config.json');
+	const exampleConfigPath = path.join(__dirname, 'config.json.example');
+
+	if (!fs.existsSync(configPath) && fs.existsSync(exampleConfigPath)) {
+		const rl = readline.createInterface({
+			input: process.stdin,
+			output: process.stdout
+		});
+
+		return new Promise((resolve) => {
+			rl.question(
+				'config.json not found. Do you want to copy config.json.example? (yes/no): ',
+				(answer) => {
+					rl.close();
+					if (answer.toLowerCase() === 'yes' || answer.toLowerCase() === 'y') {
+						fs.copyFileSync(exampleConfigPath, configPath);
+						console.log('config.json created from config.json.example');
+					} else {
+						console.log('Skipping config.json creation.');
+					}
+					resolve();
+				}
+			);
+		});
+	}
+}
+
+// Main setup function
+async function setup() {
+	await checkConfig();
 
 if (platform === 'win32') {
 	const batFile = path.join(__dirname, 'custom-browser.bat');
@@ -78,22 +112,40 @@ if (platform === 'win32') {
 		'Use Browserosaurus or a similar tool to configure the script as your default browser.'
 	);
 } else if (platform === 'linux') {
+	// Generate the wrapper script
+	const wrapperScript = path.join(__dirname, 'custom-browser-wrapper.sh');
+	const nodePath = process.execPath; // Get current node executable path
+	const scriptPath = path.resolve(__dirname, 'index.js');
+	const wrapperContent = `#!/bin/bash\n${nodePath} ${scriptPath} "$@"\n`;
+
+	fs.writeFileSync(wrapperScript, wrapperContent);
+	fs.chmodSync(wrapperScript, '755'); // Make executable
+
 	const desktopFile = path.join(
 		os.homedir(),
 		'.local/share/applications/custom-browser.desktop'
 	);
-	const execPath = `node ${path.resolve(__dirname, 'index.js')}`;
 	const desktopEntry = `[Desktop Entry]
 Name=Custom Browser
-Exec=${execPath} %u
-Type=Application
+Exec=${wrapperScript} %u
 Terminal=false
-MimeType=x-scheme-handler/http;x-scheme-handler/https;`;
+Type=Application
+Categories=Network;WebBrowser;
+MimeType=text/html;application/xhtml+xml;x-scheme-handler/http;x-scheme-handler/https;
+`;
 	fs.writeFileSync(desktopFile, desktopEntry);
 	exec(
 		`xdg-mime default custom-browser.desktop x-scheme-handler/http x-scheme-handler/https`
 	);
 	console.log('Custom browser set as default.');
+	console.log('\nVerification steps:');
+	console.log('1. Check that custom-browser-wrapper.sh was created in the project directory');
+	console.log('2. Verify the desktop file at ~/.local/share/applications/custom-browser.desktop');
+	console.log('3. Test with: xdg-open "https://example.com"');
 } else {
 	console.error('Unsupported platform.');
 }
+}
+
+// Run the setup
+setup();

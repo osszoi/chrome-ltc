@@ -1,6 +1,5 @@
-[
-  {
-    "regex": ".+",
-    "profile": "Default"
-  }
-]
+{
+  "Default": [
+    ".+"
+  ]
+}

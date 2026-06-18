@@ -9,20 +9,21 @@ const profileMappingPath = path.join(__dirname, 'config.json');
 let profileMapping = [];
 
 if (fs.existsSync(profileMappingPath)) {
-	profileMapping = JSON.parse(fs.readFileSync(profileMappingPath, 'utf-8')).map(
-		({ regex, profile }) => ({
-			regex: new RegExp(regex),
-			profile
-		})
-	);
+	const config = JSON.parse(fs.readFileSync(profileMappingPath, 'utf-8'));
+	profileMapping = Object.entries(config).map(([profile, regexes]) => ({
+		profile,
+		regexes: regexes.map((regex) => new RegExp(regex))
+	}));
 } else {
 	console.error('Profile mapping file not found. Using default profile.');
-	profileMapping = [{ regex: /.+/, profile: 'Default' }];
+	profileMapping = [{ profile: 'Default', regexes: [/.+/] }];
 }
 
 // Get the Chrome command based on OS
 function getChromeCommand(url) {
-	const profile = profileMapping.find(({ regex }) => regex.test(url))?.profile;
+	const profile = profileMapping.find(({ regexes }) =>
+		regexes.some((regex) => regex.test(url))
+	)?.profile;
 	if (!profile) {
 		console.error('No profile matched the URL. Opening with default profile.');
 		return getChromeExecutable() + ` "${url}"`;

@@ -33,7 +33,7 @@ function getChromeCommand(url) {
 	return `${getChromeExecutable()} ${profileOption} "${url}"`;
 }
 
-// Determine the correct Chrome executable
+
 function getChromeExecutable() {
 	const platform = os.platform();
 	if (platform === 'win32') {
@@ -41,9 +41,22 @@ function getChromeExecutable() {
 	} else if (platform === 'darwin') {
 		return `/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome`;
 	} else if (platform === 'linux') {
-		return `google-chrome`; // Or `chromium` depending on your setup
+		return findLinuxChrome();
 	}
 	throw new Error('Unsupported OS');
+}
+
+const LINUX_CHROME_CANDIDATES = ['google-chrome', 'google-chrome-stable'];
+
+function findLinuxChrome() {
+	const pathDirs = (process.env.PATH || '').split(path.delimiter);
+	const found = LINUX_CHROME_CANDIDATES.find((bin) =>
+		pathDirs.some((dir) => fs.existsSync(path.join(dir, bin)))
+	);
+	if (!found) {
+		throw new Error(`No Chrome binary found in PATH (tried: ${LINUX_CHROME_CANDIDATES.join(', ')})`);
+	}
+	return found;
 }
 
 // Determine the correct profile option

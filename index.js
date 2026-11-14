@@ -29,8 +29,18 @@ function getChromeCommand(url) {
 		return getChromeExecutable() + ` "${url}"`;
 	}
 
+	if (os.platform() === 'linux') writeBrowserGroupHint(profile);
+
 	const profileOption = getProfileOption(profile);
 	return `${getChromeExecutable()} ${profileOption} "${url}"`;
+}
+
+// chrome windows all look the same to hyprland, the browser-group hook reads this
+// to know which profile the window that's about to open belongs to
+function writeBrowserGroupHint(profile) {
+	const hintPath = path.join(process.env.XDG_RUNTIME_DIR || os.tmpdir(), 'browser-group-hint');
+	const expires = Math.floor(Date.now() / 1000) + 15;
+	fs.writeFileSync(hintPath, `${profile}\n${expires}\n`);
 }
 
 
